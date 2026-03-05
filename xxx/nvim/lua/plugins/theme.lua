@@ -1,1 +1,0 @@
-/home/sam/.config/omarchy/current/theme/neovim.lua

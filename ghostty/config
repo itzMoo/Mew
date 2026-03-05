@@ -1,0 +1,232 @@
+# ============================================================================
+#  Ghostty — Terminal Emulator Configuration
+#  Author   : Mo
+#  Updated  : 2026-03-05
+#  Platforms: Linux · macOS · Windows
+#  Docs     : https://ghostty.org/docs/config/reference
+# ============================================================================
+#
+#  ╔══════════════════════════════════════════════════════════════════════════╗
+#  ║  OS QUICK-SWITCH — boxed settings, uncomment your OS, comment others    ║
+#  ║                                                                         ║
+#  ║  Section   Setting               Linux      macOS        Windows        ║
+#  ║  § 2       window-decoration     none       auto         auto           ║
+#  ║  § 2       window-theme          ghostty    auto         auto           ║
+#  ║  § 2       gtk-toolbar-style     flat       —            —              ║
+#  ║  § 2       background-blur       —          true         —              ║
+#  ║  § 5       macos-option-as-alt   —          left         —              ║
+#  ║  § 5       macos-titlebar-style  —          transparent  —              ║
+#  ║                                                                         ║
+#  ║  THEME — no hardcoded colors, switched from the terminal:               ║
+#  ║    gth catppuccin-mocha      (after alias setup in § 0)                 ║
+#  ║    ghostty +list-themes      (browse 300+ built-in themes, no clone)    ║
+#  ╚══════════════════════════════════════════════════════════════════════════╝
+
+# ─────────────────────────────────────────────────────────────────────────────
+# § 0  THEME — managed externally, never hardcoded here
+# ─────────────────────────────────────────────────────────────────────────────
+#
+#  Ghostty ships 300+ built-in themes. No git clone needed.
+#  List all: ghostty +list-themes
+#
+#  Shell aliases — add ONE block to your rc file, then call `gth <name>`:
+#
+#  ── bash / zsh  (~/.bashrc or ~/.zshrc) ──────────────────────────────────
+#  gth() { echo "theme = $1" > ~/.config/ghostty/theme.conf; }
+#
+#  ── fish  (~/.config/fish/config.fish) ───────────────────────────────────
+#  function gth; echo "theme = $argv[1]" > ~/.config/ghostty/theme.conf; end
+#
+#  ── PowerShell  ($PROFILE) ───────────────────────────────────────────────
+#  function Set-GhosttyTheme($n) {
+#    "theme = $n" | Set-Content "$HOME\.config\ghostty\theme.conf" }
+#  Set-Alias gth Set-GhosttyTheme
+#
+#  First-time setup (run once — same command on all OS):
+#    gth catppuccin-mocha
+#
+#  Config dir is ~/.config/ghostty/ on Linux, macOS, and Windows (Ghostty
+#  follows XDG conventions on all platforms).
+#
+# ┌─── ACTIVE IMPORT ────────────────────────────────────────────────────────┐
+
+config-file = ?~/.config/ghostty/theme.conf   # managed by gth alias
+                                               # ? = silent if file missing
+
+# └─────────────────────────────────────────────────────────────────────────┘
+#
+# ┌─── ALTERNATIVE: Arch Linux + omarchy (replaces import above) ───────────┐
+# config-file = ?"~/.config/omarchy/current/theme/ghostty.conf"
+# └─────────────────────────────────────────────────────────────────────────┘
+
+# ─────────────────────────────────────────────────────────────────────────────
+# § 1  FONT
+# ─────────────────────────────────────────────────────────────────────────────
+
+font-family = CaskaydiaMono Nerd Font
+font-style  = Regular
+font-size   = 9
+
+# CaskaydiaMono OpenType features — ligatures are OFF
+# Uncomment a line to re-enable that ligature class.
+font-feature = -calt   # contextual alternates (main ligature engine) — disabled
+font-feature = -liga   # standard ligatures (e.g., -> =>)             — disabled
+font-feature = -dlig   # discretionary ligatures                       — disabled
+
+# Line height: give glyphs some breathing room without changing the font
+adjust-cell-height = 10%
+
+# ─────────────────────────────────────────────────────────────────────────────
+# § 2  WINDOW
+# ─────────────────────────────────────────────────────────────────────────────
+
+window-padding-x       = 14
+window-padding-y       = 14
+window-padding-balance = true     # spread leftover pixels evenly on all 4 sides
+window-save-state      = always   # remember size/position (active on macOS; no-op elsewhere)
+confirm-close-surface  = false    # close without "are you sure?" prompt
+resize-overlay         = never    # hide dimension popup while resizing
+background-opacity     = 0.95
+
+# ┌─── OS-SPECIFIC: window chrome & toolkit ────────────────────────────────┐
+window-decoration = none           # Linux / Wayland  — WM handles the titlebar
+# window-decoration = auto         # macOS / Windows  — native OS titlebar
+window-theme = ghostty             # Linux GTK        — titlebar matches terminal bg
+# window-theme = auto              # macOS / Windows  — follow system dark/light
+gtk-toolbar-style = flat           # Linux GTK only   — flat headerbar, no shadow
+# └─────────────────────────────────────────────────────────────────────────┘
+
+# ┌─── OS-SPECIFIC: background blur ────────────────────────────────────────┐
+# background-blur = true   # macOS (native) / KDE Plasma (Wayland + X11)
+#                          # Hyprland users: configure blur in hyprland.conf
+#                          # Windows: not currently supported by Ghostty
+# └─────────────────────────────────────────────────────────────────────────┘
+
+# ─────────────────────────────────────────────────────────────────────────────
+# § 3  CURSOR
+# ─────────────────────────────────────────────────────────────────────────────
+
+cursor-style         = block          # block | bar | underline | block_hollow
+cursor-style-blink   = false
+cursor-click-to-move = true           # alt+click (Linux/Win) / option+click (macOS)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# § 4  SHELL INTEGRATION
+# ─────────────────────────────────────────────────────────────────────────────
+
+shell-integration = detect   # auto-detect: bash, zsh, fish, elvish
+
+# no-cursor    → shell integration won't override the cursor set in § 3
+# sudo         → preserve terminfo when running sudo
+# ssh-env      → convert TERM to xterm-256color for remote SSH sessions
+# ssh-terminfo → auto-install Ghostty terminfo on remote hosts
+shell-integration-features = no-cursor,sudo,ssh-env,ssh-terminfo
+
+# ─────────────────────────────────────────────────────────────────────────────
+# § 5  OS PLATFORM OVERRIDES
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ┌─── macOS only ───────────────────────────────────────────────────────────┐
+# macos-option-as-alt   = left          # left Option → Alt (word-jump, shell shortcuts)
+# macos-titlebar-style  = transparent   # titlebar inherits terminal background color
+# macos-window-shadow   = true          # window drop shadow
+# └─────────────────────────────────────────────────────────────────────────┘
+
+# ┌─── Linux only ───────────────────────────────────────────────────────────┐
+# GTK-specific settings live in the § 2 window chrome box above.
+# └─────────────────────────────────────────────────────────────────────────┘
+
+# ┌─── Windows only ─────────────────────────────────────────────────────────┐
+# No Ghostty-specific Windows overrides required at this time.
+# └─────────────────────────────────────────────────────────────────────────┘
+
+# ─────────────────────────────────────────────────────────────────────────────
+# § 6  CLIPBOARD
+# ─────────────────────────────────────────────────────────────────────────────
+
+copy-on-select                 = clipboard   # auto-copy selection → both clipboards
+clipboard-trim-trailing-spaces = true        # strip trailing whitespace on copy
+clipboard-paste-protection     = true        # warn before pasting multi-line into prompt
+
+# ─────────────────────────────────────────────────────────────────────────────
+# § 7  SCROLLBACK
+# ─────────────────────────────────────────────────────────────────────────────
+
+scrollback-limit = 10000   # lines; memory is lazily allocated up to this limit
+
+# ─────────────────────────────────────────────────────────────────────────────
+# § 8  MOUSE
+# ─────────────────────────────────────────────────────────────────────────────
+
+mouse-scroll-multiplier = 0.95   # slightly slower than default (default = 3 lines/tick)
+mouse-hide-while-typing = true   # hide pointer while typing; reappears on movement
+
+# ─────────────────────────────────────────────────────────────────────────────
+# § 9  URLS & NOTIFICATIONS
+# ─────────────────────────────────────────────────────────────────────────────
+
+link-url          = true   # Ctrl+hover (Linux/Win) or Cmd+hover (macOS) opens URL
+link-previews     = true   # show URL preview bar before opening
+desktop-notifications = true   # OSC 9 / OSC 777 escape sequences → OS notifications
+
+# ─────────────────────────────────────────────────────────────────────────────
+# § 10  SPLITS
+# ─────────────────────────────────────────────────────────────────────────────
+
+focus-follows-mouse     = false   # hover to focus a split (set true if preferred)
+unfocused-split-opacity = 0.85    # dim unfocused splits so the active one is obvious
+
+# ─────────────────────────────────────────────────────────────────────────────
+# § 11  KEYBOARD BINDINGS
+# ─────────────────────────────────────────────────────────────────────────────
+#  super = Win/Super key on Linux · Cmd on macOS · Win on Windows
+#  Run `ghostty +list-actions` to see every available action.
+
+# ── Clipboard ────────────────────────────────────────────────────────────────
+keybind = ctrl+shift+c=copy_to_clipboard
+keybind = ctrl+shift+v=paste_from_clipboard
+keybind = ctrl+insert=copy_to_clipboard       # legacy terminal convention
+keybind = shift+insert=paste_from_clipboard   # legacy terminal convention
+
+# ── Font size ────────────────────────────────────────────────────────────────
+keybind = ctrl+equal=increase_font_size:1     # ctrl+=
+keybind = ctrl+minus=decrease_font_size:1     # ctrl+-
+keybind = ctrl+zero=reset_font_size           # ctrl+0
+
+# ── Window / Tabs ─────────────────────────────────────────────────────────────
+keybind = ctrl+shift+n=new_window
+keybind = ctrl+shift+t=new_tab
+keybind = ctrl+shift+w=close_surface
+keybind = ctrl+shift+f=toggle_fullscreen
+keybind = ctrl+shift+r=reload_config
+
+# ── Tab navigation ────────────────────────────────────────────────────────────
+keybind = ctrl+page_up=previous_tab
+keybind = ctrl+page_down=next_tab
+
+# ── Splits (create) ───────────────────────────────────────────────────────────
+keybind = ctrl+shift+minus=new_split:down       # split pane below
+keybind = ctrl+shift+backslash=new_split:right  # split pane to the right
+
+# ── Splits (navigate, vi-style) ───────────────────────────────────────────────
+keybind = ctrl+shift+h=goto_split:left
+keybind = ctrl+shift+j=goto_split:bottom
+keybind = ctrl+shift+k=goto_split:top
+keybind = ctrl+shift+l=goto_split:right
+
+# ── Splits (resize — 4-modifier combo avoids system conflicts) ────────────────
+keybind = super+ctrl+shift+alt+arrow_down=resize_split:down,100
+keybind = super+ctrl+shift+alt+arrow_up=resize_split:up,100
+keybind = super+ctrl+shift+alt+arrow_left=resize_split:left,100
+keybind = super+ctrl+shift+alt+arrow_right=resize_split:right,100
+
+# ┌─── OS-SPECIFIC: macOS — super = Cmd, natural muscle memory ─────────────┐
+# keybind = super+c=copy_to_clipboard
+# keybind = super+v=paste_from_clipboard
+# keybind = super+n=new_window
+# keybind = super+t=new_tab
+# keybind = super+w=close_surface
+# keybind = super+equal=increase_font_size:1
+# keybind = super+minus=decrease_font_size:1
+# keybind = super+zero=reset_font_size
+# └─────────────────────────────────────────────────────────────────────────┘
